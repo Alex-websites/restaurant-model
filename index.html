@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella's Bistro - Order Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #d4a574, #c8956d);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hours-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .hours-info h3 {
+            color: #d4a574;
+            margin-bottom: 10px;
+        }
+        
+        .menu-category {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .category-header {
+            background: #d4a574;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .menu-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .menu-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .item-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .item-price {
+            font-weight: bold;
+            color: #d4a574;
+            font-size: 1.1em;
+        }
+        
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .add-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #d4a574;
+            color: white;
+            border-radius: 50%;
+            padding: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .cart-icon:hover {
+            transform: scale(1.1);
+            background: #c8956d;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 6px;
+            font-size: 0.8em;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+        
+        .cart-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .cart-header h2 {
+            color: #d4a574;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-total {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d4a574;
+        }
+        
+        .checkout-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        
+        .checkout-btn:hover {
+            background: #218838;
+        }
+        
+        .order-form {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        .submit-order-btn {
+            background: #d4a574;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-order-btn:hover {
+            background: #c8956d;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .menu-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .item-actions {
+                align-self: flex-end;
+            }
+            
+            .cart-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍝 Bella's Bistro</h1>
+        <p>Authentic Italian Cuisine • Order Online for Pickup</p>
+    </div>
+    
+    <div class="container">
+        <div class="hours-info">
+            <h3>📍 123 Main Street, Downtown</h3>
+            <p><strong>Hours:</strong> Monday-Thursday: 11am-9pm | Friday-Saturday: 11am-10pm | Sunday: 12pm-8pm</p>
+            <p><strong>Phone:</strong> (555) 123-4567</p>
+        </div>
+        
+        <div class="menu-category">
+            <div class="category-header">🍕 Appetizers</div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Bruschetta Trio</div>
+                    <div class="item-description">Three slices of toasted bread with tomato basil, olive tapenade, and ricotta honey</div>
+                    <div class="item-price">$8.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Bruschetta Trio', 8.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Mozzarella Sticks</div>
+                    <div class="item-description">Hand-breaded mozzarella served with marinara sauce</div>
+                    <div class="item-price">$6.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Mozzarella Sticks', 6.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Caesar Salad</div>
+                    <div class="item-description">Romaine lettuce, parmesan cheese, croutons, and Caesar dressing</div>
+                    <div class="item-price">$7.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Caesar Salad', 7.99)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-category">
+            <div class="category-header">🍝 Pasta</div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Spaghetti Carbonara</div>
+                    <div class="item-description">Fresh spaghetti with pancetta, eggs, parmesan, and black pepper</div>
+                    <div class="item-price">$14.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Spaghetti Carbonara', 14.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Fettuccine Alfredo</div>
+                    <div class="item-description">Creamy parmesan sauce over fresh fettuccine pasta</div>
+                    <div class="item-price">$12.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Fettuccine Alfredo', 12.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Penne Arrabbiata</div>
+                    <div class="item-description">Spicy tomato sauce with garlic, red peppers, and fresh basil</div>
+                    <div class="item-price">$11.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Penne Arrabbiata', 11.99)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-category">
+            <div class="category-header">🍕 Pizza</div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Margherita Pizza</div>
+                    <div class="item-description">Fresh mozzarella, tomato sauce, and basil on thin crust</div>
+                    <div class="item-price">$13.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Margherita Pizza', 13.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Pepperoni Pizza</div>
+                    <div class="item-description">Classic pepperoni with mozzarella cheese and tomato sauce</div>
+                    <div class="item-price">$15.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Pepperoni Pizza', 15.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Quattro Stagioni</div>
+                    <div class="item-description">Four sections: mushrooms, artichokes, ham, and olives</div>
+                    <div class="item-price">$17.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Quattro Stagioni', 17.99)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-category">
+            <div class="category-header">🍰 Desserts</div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Tiramisu</div>
+                    <div class="item-description">Classic Italian dessert with coffee-soaked ladyfingers and mascarpone</div>
+                    <div class="item-price">$6.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Tiramisu', 6.99)">Add to Cart</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="item-info">
+                    <div class="item-name">Cannoli</div>
+                    <div class="item-description">Crispy shells filled with sweet ricotta and chocolate chips</div>
+                    <div class="item-price">$4.99</div>
+                </div>
+                <div class="item-actions">
+                    <button class="add-btn" onclick="addToCart('Cannoli', 4.99)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cart Icon -->
+    <div class="cart-icon" onclick="openCart()">
+        🛒
+        <span class="cart-count" id="cart-count">0</span>
+    </div>
+    
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Your Order</h2>
+                <button class="close-btn" onclick="closeCart()">&times;</button>
+            </div>
+            
+            <div id="cart-items">
+                <div class="empty-cart">Your cart is empty</div>
+            </div>
+            
+            <div class="cart-total" id="cart-total">Total: $0.00</div>
+            
+            <button class="checkout-btn" id="checkout-btn" onclick="showOrderForm()" disabled>Proceed to Checkout</button>
+            
+            <div class="order-form" id="order-form">
+                <h3>Order Details</h3>
+                <div class="form-group">
+                    <label for="customer-name">Your Name *</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer-phone">Phone Number *</label>
+                    <input type="tel" id="customer-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="pickup-time">Pickup Time *</label>
+                    <select id="pickup-time" required>
+                        <option value="">Select pickup time</option>
+                        <option value="ASAP">ASAP (20-30 minutes)</option>
+                        <option value="30min">30 minutes</option>
+                        <option value="1hour">1 hour</option>
+                        <option value="1.5hours">1.5 hours</option>
+                        <option value="2hours">2 hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="special-instructions">Special Instructions</label>
+                    <input type="text" id="special-instructions" placeholder="Any special requests...">
+                </div>
+                <button class="submit-order-btn" onclick="submitOrder()">Submit Order</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let cart = [];
+        let cartTotal = 0;
+        
+        function addToCart(itemName, price) {
+            // Add item to cart
+            const existingItem = cart.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    name: itemName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            
+            // Show visual feedback
+            event.target.textContent = 'Added!';
+            event.target.disabled = true;
+            setTimeout(() => {
+                event.target.textContent = 'Add to Cart';
+                event.target.disabled = false;
+            }, 1000);
+        }
+        
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotalEl = document.getElementById('cart-total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Update cart total
+            cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotalEl.textContent = `Total: $${cartTotal.toFixed(2)}`;
+            
+            // Update cart items display
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+                checkoutBtn.disabled = true;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <small>$${item.price.toFixed(2)} each</small>
+                        </div>
+                        <div>
+                            <button onclick="changeQuantity('${item.name}', -1)">-</button>
+                            <span style="margin: 0 10px;">${item.quantity}</span>
+                            <button onclick="changeQuantity('${item.name}', 1)">+</button>
+                        </div>
+                    </div>
+                `).join('');
+                checkoutBtn.disabled = false;
+            }
+        }
+        
+        function changeQuantity(itemName, change) {
+            const item = cart.find(item => item.name === itemName);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(cartItem => cartItem.name !== itemName);
+                }
+                updateCartDisplay();
+            }
+        }
+        
+        function openCart() {
+            document.getElementById('cart-modal').style.display = 'block';
+        }
+        
+        function closeCart() {
+            document.getElementById('cart-modal').style.display = 'none';
+            document.getElementById('order-form').style.display = 'none';
+        }
+        
+        function showOrderForm() {
+            document.getElementById('order-form').style.display = 'block';
+        }
+        
+        function submitOrder() {
+            const name = document.getElementById('customer-name').value;
+            const phone = document.getElementById('customer-phone').value;
+            const pickupTime = document.getElementById('pickup-time').value;
+            const instructions = document.getElementById('special-instructions').value;
+            
+            if (!name || !phone || !pickupTime) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create order data
+            const orderData = {
+                timestamp: new Date().toISOString(),
+                customerName: name,
+                customerPhone: phone,
+                pickupTime: pickupTime,
+                specialInstructions: instructions,
+                items: cart.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    subtotal: item.price * item.quantity
+                })),
+                total: cartTotal
+            };
+            
+            // In a real implementation, this would send to Google Sheets or your backend
+            // For demo purposes, we'll show the order and simulate submission
+            console.log('Order submitted:', orderData);
+            
+            // Show success message
+            document.getElementById('order-form').innerHTML = `
+                <div class="success-message">
+                    <h3>Order Submitted Successfully! 🎉</h3>
+                    <p><strong>Order for:</strong> ${name}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Pickup Time:</strong> ${pickupTime}</p>
+                    <p><strong>Total:</strong> $${cartTotal.toFixed(2)}</p>
+                    <p>We'll call you when your order is ready!</p>
+                </div>
+            `;
+            
+            // Here you would typically send the order to Google Sheets using Google Apps Script
+            // Example endpoint: https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+            
+            // Clear cart after successful submission
+            setTimeout(() => {
+                cart = [];
+                updateCartDisplay();
+                closeCart();
+            }, 3000);
+        }
+        
+        // Initialize cart display
+        updateCartDisplay();
+    </script>
+</body>
+</html>
